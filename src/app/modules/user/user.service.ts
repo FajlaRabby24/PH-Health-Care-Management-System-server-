@@ -3,7 +3,7 @@ import { Role, Specialty } from "../../../generated/prisma/client";
 import AppError from "../../errorHandlers/AppError";
 import { auth } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
-import { ICreateDoctorPayload } from "./user.type";
+import { ICreateAdmin, ICreateDoctorPayload } from "./user.type";
 
 // create doctor
 const createDoctor = async (payload: ICreateDoctorPayload) => {
@@ -127,6 +127,34 @@ const createDoctor = async (payload: ICreateDoctorPayload) => {
   }
 };
 
+// create admin => supper admin
+const createAdmin = async (payload: ICreateAdmin) => {
+  const userExists = await prisma.user.findUnique({
+    where: {
+      email: payload.admin.email,
+    },
+  });
+
+  if (userExists) {
+    throw new AppError(
+      status.BAD_REQUEST,
+      "User with this email already exists",
+    );
+  }
+
+  const adminData = await auth.api.signUpEmail({
+    body: {
+      name: payload.admin.name,
+      email: payload.admin.email,
+      password: payload.password,
+      role: Role.ADMIN,
+    },
+  });
+
+  return adminData;
+};
+
 export const userServices = {
   createDoctor,
+  createAdmin,
 };
