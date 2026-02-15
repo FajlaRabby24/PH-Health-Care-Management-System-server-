@@ -4,6 +4,9 @@ dotenv.config();
 export const envVars = {
   NODE_ENV: process.env.NODE_ENV as string,
   PORT: process.env.PORT as string,
+  SUPER_ADMIN_NAME: process.env.NAME as string,
+  SUPER_ADMIN_EMAIL: process.env.EMAIL as string,
+  SUPER_ADMIN_PASSWORD: process.env.PASSWORD as string,
   DATABASE_URL: process.env.DATABASE_URL as string,
   BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET as string,
   BETTER_AUTH_URL: process.env.BETTER_AUTH_URL as string,

@@ -25,6 +25,5 @@ export interface ICreateAdmin {
     name: string;
     email: string;
     profilePhoto?: string;
-    contactNumber: string;
   };
 }

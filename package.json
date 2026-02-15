@@ -14,6 +14,8 @@
     "studio": "prisma studio",
     "push": "prisma db push",
     "pull": "prisma db pull",
+    "format": "prisma format",
+    "seed:superadmin": "tsx  ./src/app/scripts/seedSuperAdmin.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

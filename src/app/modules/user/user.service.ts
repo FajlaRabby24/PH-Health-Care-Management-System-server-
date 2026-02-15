@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import status from "http-status";
 import { Role, Specialty } from "../../../generated/prisma/client";
 import AppError from "../../errorHandlers/AppError";
@@ -116,6 +117,7 @@ const createDoctor = async (payload: ICreateDoctorPayload) => {
 
       return doctor;
     });
+
     return result;
   } catch (error) {
     console.log("Transaction error", error);
@@ -142,16 +144,61 @@ const createAdmin = async (payload: ICreateAdmin) => {
     );
   }
 
-  const adminData = await auth.api.signUpEmail({
+  const userData = await auth.api.signUpEmail({
     body: {
       name: payload.admin.name,
       email: payload.admin.email,
       password: payload.password,
       role: Role.ADMIN,
+      needPasswordChange: true,
     },
   });
 
-  return adminData;
+  try {
+    const result = await prisma.$transaction(async (tx) => {
+      const admin = await tx.admin.create({
+        data: {
+          userId: userData.user.id,
+          name: payload.admin.name,
+          email: payload.admin.email,
+        },
+      });
+
+      const createdAdmin = await tx.admin.findUnique({
+        where: { id: admin.id },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          profilePhoto: true,
+          contactNumber: true,
+          isDeleted: true,
+          createdAt: true,
+          updatedAt: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              role: true,
+              status: true,
+            },
+          },
+        },
+      });
+
+      return createdAdmin;
+    });
+
+    return result;
+  } catch (error: any) {
+    await prisma.user.delete({
+      where: {
+        id: userData.user.id,
+      },
+    });
+    throw new AppError(status.BAD_REQUEST, error.message);
+  }
 };
 
 export const userServices = {
