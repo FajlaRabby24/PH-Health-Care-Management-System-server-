@@ -23,9 +23,14 @@ model Doctor {
 
   //relations
 
-  userId            String            @unique
-  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  doctorSpecialties DoctorSpecialty[]
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  specialties     DoctorSpecialty[]
+  appointments    Appointment[]
+  prescriptions   Prescription[]
+  reviews         Review[]
+  doctorSchedules DoctorSchedules[]
 
   @@index([email], name: "idx_doctor_email")
   @@index([isDeleted], name: "idx_doctor_isDeleted")

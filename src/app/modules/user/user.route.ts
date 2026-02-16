@@ -13,12 +13,12 @@ router.post(
   validateRequest(UserValidation.createDoctorValidationSchema),
   userController.createDoctor,
 );
+
 router.post(
   "/create-admin",
   checkAuth(Role.SUPER_ADMIN),
   validateRequest(UserValidation.createAdminValidationSchema),
   userController.createAdmin,
 );
-// router.post("/create-superadmin", userController.createDoctor);
 
 export const userRoutes = router;

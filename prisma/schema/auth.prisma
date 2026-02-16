@@ -1,5 +1,4 @@
 // npx @better-auth/cli@latest generate --output ./prisma/schema/auth.prisma --config ./src/app/lib/auth.ts
-
 model User {
   id                 String     @id
   name               String

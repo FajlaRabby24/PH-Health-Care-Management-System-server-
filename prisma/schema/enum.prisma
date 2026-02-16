@@ -6,26 +6,14 @@ enum Role {
 }
 
 enum UserStatus {
+  ACTIVE
   BLOCKED
   DELETED
-  ACTIVE
 }
 
 enum Gender {
   MALE
   FEMALE
-}
-
-enum AppointmentStatus {
-  SCHEDULED
-  INPROGRESS
-  COMPLETED
-  CANCELED
-}
-
-enum PaymentStatus {
-  PAID
-  UNPAID
 }
 
 enum BloodGroup {
@@ -39,9 +27,14 @@ enum BloodGroup {
   O_NEGATIVE
 }
 
-enum MaritalStatus {
-  MARRIED
-  UNMARRIED
-  DIVORCED
-  WIDOWED
+enum AppointmentStatus {
+  SCHEDULED
+  INPROGRESS
+  COMPLETED
+  CANCELED
+}
+
+enum PaymentStatus {
+  PAID
+  UNPAID
 }

@@ -13,7 +13,7 @@ model Specialty {
   doctorSpecialties DoctorSpecialty[]
 
   @@index([isDeleted], name: "idx_specialty_isDeleted")
-  @@index([title], name: "idx_spaecialty_title")
+  @@index([title], name: "idx_specialty_title")
   @@map("specialties")
 }
 
