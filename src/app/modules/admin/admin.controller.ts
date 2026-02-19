@@ -30,6 +30,7 @@ const updateAdmin = catchAsync(async (req: Request, res: Response) => {
 const softDeleteAdmin = catchAsync(async (req: Request, res: Response) => {
   const result = await adminServices.softDeleteAdmin(
     req.params.adminId as string,
+    req.user,
   );
   sendResponse(res, status.OK, true, "Admin deleted successfully", result);
 });

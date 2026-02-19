@@ -1,6 +1,7 @@
 import status from "http-status";
-import { Role } from "../../../generated/prisma/enums";
+import { Role, UserStatus } from "../../../generated/prisma/enums";
 import AppError from "../../errorHandlers/AppError";
+import { IRequestUser } from "../../interfaces/requestUser.interface";
 import { prisma } from "../../lib/prisma";
 import { IUpdateAdmin } from "./admin.type";
 
@@ -37,9 +38,7 @@ const getAdminById = async (id: string) => {
   }
 
   // Transform specialties to flatten structure
-  return {
-    ...admin,
-  };
+  return admin;
 };
 
 // * update admin by id
@@ -59,32 +58,47 @@ const updateAdmin = async (id: string, payload: IUpdateAdmin) => {
   });
 
   // Return updated admin with transformed specialties
-  return {
-    ...updatedAdmin,
-  };
+  return updatedAdmin;
 };
 
 // * soft delete admin by id
-const softDeleteAdmin = async (id: string) => {
-  // Check if admin exists and not already deleted
-  const admin = await getAdminById(id);
+const softDeleteAdmin = async (id: string, user: IRequestUser) => {
+  // Check if doctor exists and not deleted
+  const isAdminExist = await getAdminById(id);
 
-  if (admin.isDeleted) {
-    throw new AppError(status.BAD_REQUEST, "Admin is already deleted");
+  if (isAdminExist.id === user.userId) {
+    throw new AppError(status.BAD_REQUEST, "You cannot delete yourself");
   }
 
-  // Mark doctor as deleted
-  const result = await prisma.admin.update({
-    where: {
-      id,
-      user: {
-        role: Role.ADMIN,
+  const result = await prisma.$transaction(async (tx) => {
+    await tx.admin.update({
+      where: { id },
+      data: {
+        isDeleted: true,
+        deletedAt: new Date(),
       },
-    },
-    data: {
-      isDeleted: true,
-      deletedAt: new Date(),
-    },
+    });
+
+    await tx.user.update({
+      where: { id: isAdminExist.userId },
+      data: {
+        isDeleted: true,
+        deletedAt: new Date(),
+        status: UserStatus.DELETED, // Optional: you may also want to block the user
+      },
+    });
+
+    await tx.session.deleteMany({
+      where: { userId: isAdminExist.userId },
+    });
+
+    await tx.account.deleteMany({
+      where: { userId: isAdminExist.userId },
+    });
+
+    const admin = await getAdminById(id);
+
+    return admin;
   });
 
   return result;
