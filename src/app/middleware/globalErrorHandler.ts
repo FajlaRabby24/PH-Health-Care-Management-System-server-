@@ -3,12 +3,13 @@
 import { NextFunction, Request, Response } from "express";
 import status from "http-status";
 import z from "zod";
+import { deleteFileFromCloudinary } from "../config/cloudinary.config";
 import { envVars } from "../config/env";
 import AppError from "../errorHandlers/AppError";
 import { handleZodError } from "../errorHandlers/handleZodError";
 import { IErrorResponse, IErrorSources } from "../interfaces/error.interfaces";
 
-export const globalErrorHandler = (
+export const globalErrorHandler = async (
   err: any,
   req: Request,
   res: Response,
@@ -16,6 +17,16 @@ export const globalErrorHandler = (
 ) => {
   if (envVars.NODE_ENV === "development") {
     console.log("Error in global error handler", err);
+  }
+
+  // * delete image from cloudinary
+  if (req.file) {
+    await deleteFileFromCloudinary(req.file.path);
+  }
+
+  if (req.files && Array.isArray(req.files) && req.files.length > 0) {
+    const imageUrls = req.files.map((file) => file.path);
+    await Promise.all(imageUrls.map((url) => deleteFileFromCloudinary(url)));
   }
 
   const errorSources: IErrorSources[] = [];

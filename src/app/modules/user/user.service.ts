@@ -6,7 +6,7 @@ import { auth } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
 import { ICreateAdmin, ICreateDoctorPayload } from "./user.type";
 
-// create doctor
+// * create doctor
 const createDoctor = async (payload: ICreateDoctorPayload) => {
   const specialties: Specialty[] = [];
 

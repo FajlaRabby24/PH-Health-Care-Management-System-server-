@@ -7,10 +7,17 @@ export const sendResponse = (
   success: boolean,
   message?: string,
   data?: any,
+  meta?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  },
 ) => {
   res.status(statusCode).json({
     success,
     message,
     data,
+    meta,
   });
 };
