@@ -8,6 +8,7 @@ import { envVars } from "./app/config/env";
 import { auth } from "./app/lib/auth";
 import { globalErrorHandler } from "./app/middleware/globalErrorHandler";
 import { notFound } from "./app/middleware/notFound";
+import { PaymentController } from "./app/modules/payment/payment.controller";
 import { indexRoutes } from "./app/routes";
 
 const app: Application = express();
@@ -18,6 +19,12 @@ app.set("view engine", "ejs");
 app.set("views", path.resolve(process.cwd(), `src/app/templates`));
 
 app.use("/api/auth/", toNodeHandler(auth));
+
+app.post(
+  "/webhook",
+  express.raw({ type: "application/json" }),
+  PaymentController.handleStripeWebhookEvent,
+);
 
 // Enable URL-encoded form data parsing
 app.use(express.urlencoded({ extended: true }));
@@ -33,6 +40,17 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
+
+// cron.schedule("*/25 * * * *", async () => {
+//   try {
+//     console.log(`Running cron job to cancel unpaid appointments...`);
+//     // await AppointmentService.cancelUnpaidAppointments();
+//   } catch (error: any) {
+//     console.error(
+//       `Error occurred while canceling unpaid appointments: ${error.message}`,
+//     );
+//   }
+// });
 
 app.use("/api/v1", indexRoutes);
 

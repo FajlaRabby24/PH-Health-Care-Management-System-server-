@@ -62,8 +62,8 @@ export class QueryBuilder<
               };
 
               return {
-                [relation]: {
-                  [nestedField]: stringFilter,
+                [relation as string]: {
+                  [nestedField as string]: stringFilter,
                 },
               };
             } else if (parts.length === 3) {
@@ -75,10 +75,10 @@ export class QueryBuilder<
               };
 
               return {
-                [relation]: {
+                [relation as string]: {
                   some: {
-                    [nestedRelation]: {
-                      [nestedField]: stringFilter,
+                    [nestedRelation as string]: {
+                      [nestedField as string]: stringFilter,
                     },
                   },
                 },
@@ -90,7 +90,7 @@ export class QueryBuilder<
             contains: searchTerm,
             mode: "insensitive" as const,
           };
-
+          console.log({ stringFilter });
           return {
             [field]: stringFilter,
           };
@@ -98,12 +98,12 @@ export class QueryBuilder<
       );
 
       const whereConditions = this.query.where as PrismaWhereConditions;
-
       whereConditions.OR = searchConditions;
 
       const countWhereConditions = this.countQuery
         .where as PrismaWhereConditions;
       countWhereConditions.OR = searchConditions;
+      console.log({ countWhereConditions });
     }
 
     return this;

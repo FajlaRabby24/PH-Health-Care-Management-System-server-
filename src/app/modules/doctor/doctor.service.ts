@@ -14,6 +14,7 @@ import { IUpdateDoctorPayload } from "./doctor.type";
 
 // * get all doctors
 const getAllDoctors = async (query: IQueryParams) => {
+  console.log({ query });
   // const doctors = await prisma.doctor.findMany({
   //   where: {
   //     isDeleted: false,
